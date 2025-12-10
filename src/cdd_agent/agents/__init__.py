@@ -1,22 +1,28 @@
 """Specialized CDD agents.
 
 Agents:
-- SocratesAgent (Week 5): Refine ticket requirements through dialogue
-- PlannerAgent (Week 6): Generate implementation plans
-- ExecutorAgent (Week 7): Execute autonomous coding
+- SocratesAgent: Refine ticket requirements through dialogue
+- PlannerAgent: Generate implementation plans
+- ExecutorAgent: Execute autonomous coding
+- WriterAgent: File persistence (utility, not conversational)
 
-For Week 4 (Task 4), we provide a TestAgent for integration testing.
+Factory:
+- AgentFactory: Centralized agent creation
 """
 
 from .executor import ExecutorAgent
+from .factory import AgentFactory
 from .planner import PlannerAgent
 from .socrates import SocratesAgent
 from .test_agent import TestAgent
+from .writer import WriterAgent
 
 
 __all__ = [
-    "TestAgent",
-    "SocratesAgent",
-    "PlannerAgent",
+    "AgentFactory",
     "ExecutorAgent",
+    "PlannerAgent",
+    "SocratesAgent",
+    "TestAgent",
+    "WriterAgent",
 ]

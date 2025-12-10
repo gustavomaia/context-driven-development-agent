@@ -10,6 +10,7 @@ import secrets
 import time
 from typing import Optional
 from typing import Tuple
+from urllib.parse import quote
 from urllib.parse import urlencode
 
 import httpx
@@ -71,7 +72,7 @@ class AnthropicOAuth:
             "code": "true",
         }
 
-        full_url = f"{auth_url}?{urlencode(params)}"
+        full_url = f"{auth_url}?{urlencode(params, quote_via=quote)}"
 
         return full_url, code_verifier
 

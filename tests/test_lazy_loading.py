@@ -23,11 +23,11 @@ class TestAnthropicLazyLoading:
             if "anthropic" in sys.modules:
                 del sys.modules["anthropic"]
 
-            # Mock the ToolRegistry and ApprovalManager
+            # Mock the ToolRegistry, ApprovalManager and ConversationManager
             with (
                 patch("cdd_agent.agent.ToolRegistry") as mock_registry,
                 patch("cdd_agent.agent.ApprovalManager") as mock_approval,
-                patch("cdd_agent.agent.ContextLoader") as mock_context,
+                patch("cdd_agent.conversation.ContextLoader") as mock_context,
             ):
                 mock_registry.return_value.get_tool_schema.return_value = {
                     "type": "function"

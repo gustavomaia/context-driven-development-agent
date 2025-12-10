@@ -102,6 +102,7 @@ class AuthManager:
             auth_token=api_key,
             base_url="https://api.anthropic.com",
             models=models,
+            provider_type="anthropic",
         )
 
         settings = Settings(
@@ -141,7 +142,10 @@ class AuthManager:
             models = self._prompt_models()
 
         provider_config = ProviderConfig(
-            api_key=api_key, base_url="https://api.openai.com/v1", models=models
+            api_key=api_key,
+            base_url="https://api.openai.com/v1",
+            models=models,
+            provider_type="openai",
         )
 
         settings = Settings(

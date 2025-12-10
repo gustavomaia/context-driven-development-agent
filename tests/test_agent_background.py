@@ -41,7 +41,8 @@ class TestAgentBackgroundToolRouting(unittest.TestCase):
 
     def test_background_tools_set_defined(self):
         """Test that BACKGROUND_TOOLS set is properly defined."""
-        self.assertIsInstance(BACKGROUND_TOOLS, set)
+        # Accept both set and frozenset
+        self.assertTrue(isinstance(BACKGROUND_TOOLS, (set, frozenset)))
         self.assertIn("run_bash_background", BACKGROUND_TOOLS)
         self.assertIn("get_background_status", BACKGROUND_TOOLS)
         self.assertIn("interrupt_background_process", BACKGROUND_TOOLS)
@@ -123,7 +124,7 @@ class TestAgentBackgroundToolAnnouncements(unittest.TestCase):
 
     def test_run_bash_background_announcement(self):
         """Test run_bash_background announcement formatting."""
-        announcement = self.agent._format_tool_announcement(
+        announcement = self.agent._formatter.format_announcement(
             "run_bash_background",
             {"command": "pytest tests/ -v", "timeout": 300},
         )
@@ -135,7 +136,7 @@ class TestAgentBackgroundToolAnnouncements(unittest.TestCase):
     def test_run_bash_background_long_command_truncated(self):
         """Test that long commands are truncated in announcements."""
         long_command = "echo " + "x" * 100
-        announcement = self.agent._format_tool_announcement(
+        announcement = self.agent._formatter.format_announcement(
             "run_bash_background", {"command": long_command, "timeout": 300}
         )
 
@@ -145,7 +146,7 @@ class TestAgentBackgroundToolAnnouncements(unittest.TestCase):
 
     def test_get_background_status_announcement(self):
         """Test get_background_status announcement formatting."""
-        announcement = self.agent._format_tool_announcement(
+        announcement = self.agent._formatter.format_announcement(
             "get_background_status", {"process_id": "abc123-def456-ghi789"}
         )
 
@@ -155,7 +156,7 @@ class TestAgentBackgroundToolAnnouncements(unittest.TestCase):
 
     def test_interrupt_background_process_announcement(self):
         """Test interrupt_background_process announcement formatting."""
-        announcement = self.agent._format_tool_announcement(
+        announcement = self.agent._formatter.format_announcement(
             "interrupt_background_process", {"process_id": "test-process-123"}
         )
 
@@ -165,7 +166,7 @@ class TestAgentBackgroundToolAnnouncements(unittest.TestCase):
 
     def test_get_background_output_announcement(self):
         """Test get_background_output announcement formatting."""
-        announcement = self.agent._format_tool_announcement(
+        announcement = self.agent._formatter.format_announcement(
             "get_background_output", {"process_id": "proc-123", "lines": 20}
         )
 
@@ -175,7 +176,7 @@ class TestAgentBackgroundToolAnnouncements(unittest.TestCase):
 
     def test_list_background_processes_announcement(self):
         """Test list_background_processes announcement formatting."""
-        announcement = self.agent._format_tool_announcement(
+        announcement = self.agent._formatter.format_announcement(
             "list_background_processes", {}
         )
 
@@ -284,11 +285,11 @@ Status: Running
 Started: 2025-11-08 10:30:00
 Use get_background_status() to check progress"""
 
-        enriched = self.agent._handle_background_tool_result(
+        # Use the background manager's enrich_result method
+        enriched = self.agent._background_manager.enrich_result(
             "run_bash_background",
             {"command": "pytest tests/ -v"},
             result,
-            "tool-123",
         )
 
         # Verify process was registered
@@ -309,11 +310,11 @@ Runtime: 5.2 seconds
 Output: 10 lines
 Command: echo 'test'"""
 
-        enriched = self.agent._handle_background_tool_result(
+        # Use the background manager's enrich_result method
+        enriched = self.agent._background_manager.enrich_result(
             "get_background_status",
             {"process_id": "proc-123"},
             result,
-            "tool-456",
         )
 
         self.assertIn("proc-123", enriched)
@@ -323,11 +324,11 @@ Command: echo 'test'"""
         """Test handling of background tool errors."""
         result = "Error: Process not found: nonexistent-123"
 
-        enriched = self.agent._handle_background_tool_result(
+        # Use the background manager's enrich_result method
+        enriched = self.agent._background_manager.enrich_result(
             "get_background_status",
             {"process_id": "nonexistent-123"},
             result,
-            "tool-789",
         )
 
         # Should still return the error message
